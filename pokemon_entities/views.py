@@ -73,7 +73,14 @@ def show_pokemon(request, pokemon_id):
     else:
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
-
+    if requested_pokemon.evolution_from:
+        pokemons_evolution_from_info = {
+            'pokemon_id': requested_pokemon.evolution_from.pk,
+            'img_url': request.build_absolute_uri(requested_pokemon.evolution_from.image.url),
+            'title_ru': requested_pokemon.evolution_from.title,
+        }
+    else:
+        pokemons_evolution_from_info = {}
 
     img_url = request.build_absolute_uri(requested_pokemon.image.url)
     pokemons_info = {
@@ -83,7 +90,10 @@ def show_pokemon(request, pokemon_id):
         'description': requested_pokemon.description,
         'title_en': requested_pokemon.title_en,
         'title_jp': requested_pokemon.title_jp,
+        'previous_evolution': pokemons_evolution_from_info
     }
+
+
 
     requested_pokemon_entities = PokemonEntity.objects.filter(pokemon=requested_pokemon)
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
