@@ -1,5 +1,4 @@
 from django.db import models  # noqa F401
-from django.utils.timezone import localtime
 
 class Pokemon(models.Model):
     title = models.CharField(max_length=200)
@@ -7,7 +6,7 @@ class Pokemon(models.Model):
     description = models.TextField(blank=True)
     title_en = models.CharField(max_length=200, blank=True)
     title_jp = models.CharField(max_length=200, blank=True)
-    evolution_from = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, blank=True)
+    evolution_from = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, blank=True, related_name='evolutions')
     def __str__(self):
         return f'{self.title}'
 
@@ -22,6 +21,3 @@ class PokemonEntity(models.Model):
     strength = models.IntegerField(null=True, blank=True)
     defence = models.IntegerField(null=True, blank=True)
     stamina = models.IntegerField(null=True, blank=True)
-
-    # def __str__(self):
-    #     return f'{self.pokemon}'

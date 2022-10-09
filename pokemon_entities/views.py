@@ -34,11 +34,8 @@ def show_all_pokemons(request):
     current_time = localtime() # Текущее локальное время
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    for entity in pokemon_entity:  # Перебираем все каждый экземляр в цикле
-        # appeared_at = localtime(entity.appeared_at)
-        # disappeared_at = localtime(entity.disappeared_at)
-        # if current_time >= appeared_at and current_time <= disappeared_at:
-        if PokemonEntity.objects.filter(appeared_at__lte=current_time, disappeared_at__gte=current_time): # фильтр для отображения действующих покемонов
+    for entity in pokemon_entity:
+        if PokemonEntity.objects.filter(appeared_at__lte=current_time, disappeared_at__gte=current_time):
             add_pokemon(
                 folium_map, entity.lat,
                 entity.lon,
@@ -66,6 +63,7 @@ def show_all_pokemons(request):
 
 def show_pokemon(request, pokemon_id):
 
+    global pokemons_evolution_to
     pokemon = Pokemon.objects.get(pk=pokemon_id)
 
     if pokemon.id == int(pokemon_id):
@@ -74,13 +72,24 @@ def show_pokemon(request, pokemon_id):
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
     if requested_pokemon.evolution_from:
-        pokemons_evolution_from_info = {
+        pokemons_evolution_from = {
             'pokemon_id': requested_pokemon.evolution_from.pk,
             'img_url': request.build_absolute_uri(requested_pokemon.evolution_from.image.url),
             'title_ru': requested_pokemon.evolution_from.title,
         }
     else:
-        pokemons_evolution_from_info = {}
+        pokemons_evolution_from = {}
+
+
+    if pokemon.evolutions.all():
+        pokemons_evolution_to = {
+            'pokemon_id': requested_pokemon.evolutions.all()[0].pk,
+            'img_url': requested_pokemon.evolutions.all()[0].image.url,
+            'title_ru': requested_pokemon.evolutions.all()[0].title,
+        }
+    else:
+        pokemons_evolution_to = {}
+
 
     img_url = request.build_absolute_uri(requested_pokemon.image.url)
     pokemons_info = {
@@ -90,7 +99,8 @@ def show_pokemon(request, pokemon_id):
         'description': requested_pokemon.description,
         'title_en': requested_pokemon.title_en,
         'title_jp': requested_pokemon.title_jp,
-        'previous_evolution': pokemons_evolution_from_info
+        'previous_evolution': pokemons_evolution_from,
+        'next_evolution': pokemons_evolution_to
     }
 
 
