@@ -1,5 +1,4 @@
 import folium
-import json
 
 from django.http import HttpResponseNotFound
 from django.shortcuts import render
@@ -23,19 +22,18 @@ def add_pokemon(folium_map, lat, lon, image_url=DEFAULT_IMAGE_URL):
     )
     folium.Marker(
         [lat, lon],
-        # Warning! `tooltip` attribute is disabled intentionally
-        # to fix strange folium cyrillic encoding bug
         icon=icon,
     ).add_to(folium_map)
 
 
 def show_all_pokemons(request):
-    pokemon_entity = PokemonEntity.objects.all() # Берем все экземпляры класса PokemonEntity
-    current_time = localtime() # Текущее локальное время
+    pokemon_entity = PokemonEntity.objects.all()
+    current_time = localtime()
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for entity in pokemon_entity:
-        if PokemonEntity.objects.filter(appeared_at__lte=current_time, disappeared_at__gte=current_time):
+        if PokemonEntity.objects.filter(appeared_at__lte=current_time,
+                                        disappeared_at__gte=current_time):
             add_pokemon(
                 folium_map, entity.lat,
                 entity.lon,
@@ -79,8 +77,6 @@ def show_pokemon(request, pokemon_id):
         }
     else:
         pokemons_evolution_from = {}
-
-
     if pokemon.evolutions.all():
         pokemons_evolution_to = {
             'pokemon_id': requested_pokemon.evolutions.all()[0].pk,
@@ -89,8 +85,6 @@ def show_pokemon(request, pokemon_id):
         }
     else:
         pokemons_evolution_to = {}
-
-
     img_url = request.build_absolute_uri(requested_pokemon.image.url)
     pokemons_info = {
         'pokemon_id': requested_pokemon.pk,
@@ -102,8 +96,6 @@ def show_pokemon(request, pokemon_id):
         'previous_evolution': pokemons_evolution_from,
         'next_evolution': pokemons_evolution_to
     }
-
-
 
     requested_pokemon_entities = PokemonEntity.objects.filter(pokemon=requested_pokemon)
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
