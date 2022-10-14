@@ -74,7 +74,7 @@ def show_pokemon(request, pokemon_id):
     else:
         pokemons_evolution_to = {}
     img_url = request.build_absolute_uri(requested_pokemon.image.url)
-    pokemons_info = {
+    pokemons_entities = {
         'pokemon_id': requested_pokemon.pk,
         'img_url': img_url,
         'title_ru': requested_pokemon.title,
@@ -96,5 +96,5 @@ def show_pokemon(request, pokemon_id):
         )
 
     return render(request, 'pokemon.html', context={
-        'map': folium_map._repr_html_(), 'pokemon': pokemons_info
+        'map': folium_map._repr_html_(), 'pokemon': pokemons_entities
     })
