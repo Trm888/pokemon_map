@@ -61,10 +61,11 @@ def show_pokemon(request, pokemon_id):
     else:
         pokemons_evolution_from = {}
     if pokemon.evolutions.all():
+        pokemon_evolution = pokemon.evolutions.all()[0]
         pokemons_evolution_to = {
-            'pokemon_id': pokemon.evolutions.all()[0].pk,
-            'img_url': pokemon.evolutions.all()[0].image.url,
-            'title_ru': pokemon.evolutions.all()[0].title,
+            'pokemon_id': pokemon_evolution.pk,
+            'img_url': pokemon_evolution.image.url,
+            'title_ru': pokemon_evolution.title,
         }
     else:
         pokemons_evolution_to = {}
